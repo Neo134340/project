@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import CSS ของ Library
+import { SignInButton } from '@clerk/clerk-react'; // Import SignInButton
 
 interface Outfit {
     id: string;
@@ -14,6 +15,12 @@ interface Outfit {
     sizes: string[]; // Field sizes
     colors?: string[]; // Field colors (Optional)
     status?: "ใหม่" | "ลดราคา"; // Field status (Optional)
+}
+
+interface OtherProduct {
+    id: string;
+    image: string;
+    name: string;
 }
 
 const getInitialCartItems = (): { [id: string]: { outfit: Outfit; quantity: number; size?: string; color?: string } } => {
@@ -106,20 +113,21 @@ const ProductCard: React.FC<{ outfit: Outfit; onAddToCart: (item: { outfit: Outf
             )}
 
             <div className="mb-2 flex flex-col space-y-1">
-            {outfit.sizes && outfit.sizes.length > 0 && (
-    <div className="flex items-center space-x-2">
-        <span className="block text-gray-700 text-sm font-bold">
-            ขนาด:
-        </span>
-        <span className="text-sm text-gray-600">
-            {outfit.sizes.join(', ')}
-        </span>
-        {/* Dropdown เลือกขนาด (ไม่ได้ใช้แล้ว เอาออก) */}
-    </div>
-)}
+                {outfit.sizes && outfit.sizes.length > 0 && (
+                    <div className="flex items-center space-x-2">
+                        <span className="block text-gray-700 text-sm font-bold">
+                            ขนาด:
+                        </span>
+                        <span className="text-sm text-gray-600">
+                            {outfit.sizes.join(', ')}
+                        </span>
+                        {/* Dropdown เลือกขนาด (ไม่ได้ใช้แล้ว เอาออก) */}
+                    </div>
+                )}
                 {outfit.colors && outfit.colors.length > 0 && (
                     <div className="flex items-center space-x-2">
                         <span className="block text-gray-700 text-sm font-bold">
+                            สี:
                         </span>
                         <div className="flex space-x-1">
                             {outfit.colors.map((color) => (
@@ -194,7 +202,7 @@ const ProductCard: React.FC<{ outfit: Outfit; onAddToCart: (item: { outfit: Outf
 
 export default function Home() {
     const outfits: Outfit[] = [
-        // ข้อมูลสินค้าของคุณ
+        // ข้อมูลสินค้าของคุณ (ชุดเสื้อ)
         { id: "1", image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png", name: "ชุดสบายๆ วันหยุด", brand: "แบรนด์ X", price: 990, sizes: ["S", "M"], status: "ใหม่", colors: ["#FADCDC", "#92CEA8", "#E8CFF8"] },
         { id: "2", image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/26839/49/pE2IPlnI73EQ0pkY49OH1bw9XqM.png", name: "ชุดทำงานสุดหรู", brand: "แบรนด์ Y", price: 1590, sizes: ["M", "L"], status: "ลดราคา", colors: ["#F898A4"] },
         { id: "3", image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png", name: "ชุดปาร์ตี้", brand: "แบรนด์ Z", price: 1250, sizes: ["S", "L"], colors: ["#80B7A2", "#BEABA7"] },
@@ -207,12 +215,26 @@ export default function Home() {
         { id: "10", image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png", name: "ชุดสไตล์วินเทจ", brand: "แบรนด์ E+", price: 1090, sizes: ["M", "L"], colors: ["cream"] },
     ];
 
+    const otherProducts: OtherProduct[] = [
+        // ข้อมูลสินค้าประเภทอื่น (รองเท้า, กระเป๋า) - ใช้รูปภาพจำลอง
+        { id: "shoe1", image: "https://via.placeholder.com/150/0000FF/FFFFFF?Text=Shoe+1", name: "รองเท้าสวย 1" },
+        { id: "shoe2", image: "https://via.placeholder.com/150/0000FF/FFFFFF?Text=Shoe+2", name: "รองเท้าสวย 2" },
+        { id: "bag1", image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=Bag+1", name: "กระเป๋าเก๋ 1" },
+        { id: "bag2", image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=Bag+2", name: "กระเป๋าเก๋ 2" },
+        { id: "shoe3", image: "https://via.placeholder.com/150/0000FF/FFFFFF?Text=Shoe+3", name: "รองเท้าสวย 3" },
+        { id: "bag3", image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=Bag+3", name: "กระเป๋าเก๋ 3" },
+        { id: "shoe4", image: "https://via.placeholder.com/150/0000FF/FFFFFF?Text=Shoe+4", name: "รองเท้าสวย 4" },
+        { id: "bag4", image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=Bag+4", name: "กระเป๋าเก๋ 4" },
+        { id: "acc1", image: "https://via.placeholder.com/150/008000/FFFFFF?Text=Acc+1", name: "เครื่องประดับ 1" },
+        { id: "acc2", image: "https://via.placeholder.com/150/008000/FFFFFF?Text=Acc+2", name: "เครื่องประดับ 2" },
+    ];
+
     const [cartCount, setCartCount] = useState(0);
     const [cartItems, setCartItems] = useState<{ [id: string]: { outfit: Outfit; quantity: number; size?: string; color?: string } }>(getInitialCartItems()); // Initialize with data from localStorage
 
     const handleAddToCart = (item: { outfit: Outfit; size?: string; color?: string }) => {
         setCartItems((prevItems) => {
-            const key = `<span class="math-inline">\{item\.outfit\.id\}\-</span>{item.size}-${item.color}`;
+            const key = `${item.outfit.id}-${item.size}-${item.color}`;
             const existingItem = prevItems[key];
             if (existingItem) {
                 return {
@@ -239,16 +261,13 @@ export default function Home() {
             <div className="container mx-auto p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 shadow-md p-2 rounded-md bg-white/80">
-                        เลือกชุดของคุณ
-                    </h1>
-                    <Link
-                        href="/admin"
-                        className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition shadow-md"
-                    >
-                        ไปหน้าแอดมิน
-                    </Link>
-                </div>
+            <h1 className="text-3xl font-bold text-gray-800 shadow-md p-2 rounded-md bg-white/80">
+                เลือกชุดของคุณ
+            </h1>
+            <div className="flex items-center space-x-4"> {/* Container สำหรับปุ่ม */}
+                <SignInButton /> {/* ปุ่ม Login จาก Clerk */}
+            </div>
+        </div>
 
                 {/* Search and Filters */}
                 <div className="mb-6 flex items-center space-x-4">
@@ -275,10 +294,35 @@ export default function Home() {
                     </select>
                 </div>
 
-                {/* Outfit Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {/* Outfit Grid (ชุดเสื้อ) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
                     {outfits.map((outfit) => (
                         <ProductCard key={outfit.id} outfit={outfit} onAddToCart={handleAddToCart} />
+                    ))}
+                </div>
+
+                {/* ดูสินค้าเพิ่มเติม (ชุดเสื้อ) */}
+                <div className="flex justify-center mb-8">
+                    <button className="bg-gray-300 text-gray-700 px-105 py-2 rounded-md hover:bg-gray-400 transition">
+                        ดูสินค้าเพิ่มเติม +
+                    </button>
+                </div>
+
+                {/* สินค้าประเภทอื่น (รองเท้า, กระเป๋า) */}
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">สินค้าอื่นๆ ที่น่าสนใจ</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {otherProducts.map((product) => (
+                        <div key={product.id} className="bg-white p-4 shadow-md rounded-lg flex flex-col justify-center items-center">
+                            <div className="aspect-w-1 aspect-h-1 relative overflow-hidden rounded-md mb-2 w-full">
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-800 text-center">{product.name}</h3>
+                            {/* คุณสามารถเพิ่มรายละเอียดเพิ่มเติมของสินค้าประเภทอื่นได้ที่นี่ */}
+                        </div>
                     ))}
                 </div>
             </div>
