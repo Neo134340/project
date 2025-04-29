@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import CSS ของ Library
-import { SignInButton } from '@clerk/clerk-react'; // Import SignInButton
+import { useRouter } from 'next/navigation'; // Import useRouter สำหรับ Next.js
 
 interface Outfit {
     id: string;
@@ -231,6 +231,7 @@ export default function Home() {
 
     const [cartCount, setCartCount] = useState(0);
     const [cartItems, setCartItems] = useState<{ [id: string]: { outfit: Outfit; quantity: number; size?: string; color?: string } }>(getInitialCartItems()); // Initialize with data from localStorage
+    const router = useRouter(); // Initialize useRouter สำหรับ Next.js
 
     const handleAddToCart = (item: { outfit: Outfit; size?: string; color?: string }) => {
         setCartItems((prevItems) => {
@@ -250,6 +251,23 @@ export default function Home() {
         });
     };
 
+    const handleNavigation = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = event.target.value;
+        if (selectedValue === "Login") {
+            router.push('/login');
+        } else if (selectedValue === "Register") {
+            router.push('/register');
+        } else if (selectedValue === "Profile") {
+            router.push('/profile');
+        } else if (selectedValue === "Logout") {
+            // Logic สำหรับ Logout (ล้าง session, token, etc.)
+            console.log('Logout clicked');
+            router.push('/'); // หรือพาไปยังหน้า Login อีกครั้ง
+        }
+        // ถ้าต้องการให้ Dropdown กลับไปเป็นค่าเริ่มต้นหลังการเลือก
+        event.target.value = "";
+    };
+
     useEffect(() => {
         const totalQuantity = Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0);
         setCartCount(totalQuantity);
@@ -261,13 +279,10 @@ export default function Home() {
             <div className="container mx-auto p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 shadow-md p-2 rounded-md bg-white/80">
-                เลือกชุดของคุณ
-            </h1>
-            <div className="flex items-center space-x-4"> {/* Container สำหรับปุ่ม */}
-                <SignInButton /> {/* ปุ่ม Login จาก Clerk */}
-            </div>
-        </div>
+                    <h1 className="text-3xl font-bold text-gray-800 shadow-md p-2 rounded-md bg-white/80">
+                        เลือกชุดของคุณ
+                    </h1>
+                </div>
 
                 {/* Search and Filters */}
                 <div className="mb-6 flex items-center space-x-4">
@@ -279,10 +294,13 @@ export default function Home() {
                     {/* ตัวอย่าง Dropdown Filter (ปรับสีสันได้) */}
                     <select
                         className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md py-2 px-3 text-blue-500"
+                        onChange={handleNavigation}
+                        defaultValue="" // กำหนดค่าเริ่มต้นเป็นค่าว่าง
                     >
-                        <option value="" className="text-gray-500">ทุกสถานะ</option>
-                        <option value="ใหม่" className="text-green-500">ใหม่</option>
-                        <option value="ลดราคา" className="text-red-500">ลดราคา</option>
+                        <option value="" className="text-gray-500">HOME</option>
+                        <option value="Login" className="text-green-500">Login</option>
+                        <option value="Profile" className="text-purple-500">Profile</option>
+                        <option value="Logout" className="text-red-500">Logout</option>
                     </select>
                     <select
                         className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md py-2 px-3 text-purple-500"
@@ -303,7 +321,7 @@ export default function Home() {
 
                 {/* ดูสินค้าเพิ่มเติม (ชุดเสื้อ) */}
                 <div className="flex justify-center mb-8">
-                    <button className="bg-gray-300 text-gray-700 px-105 py-2 rounded-md hover:bg-gray-400 transition">
+                    <button className="bg-gray-300 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-400 transition">
                         ดูสินค้าเพิ่มเติม +
                     </button>
                 </div>
