@@ -253,12 +253,16 @@ export default function Home() {
 
     const handleNavigation = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = event.target.value;
-        if (selectedValue === "Login") {
+        if (selectedValue === "") {
+            router.push('/'); // กลับไปหน้า Home หากเลือกค่าเริ่มต้น
+        } else if (selectedValue === "Login") {
             router.push('/login');
-        } else if (selectedValue === "Register") {
-            router.push('/register');
         } else if (selectedValue === "Profile") {
             router.push('/profile');
+        } else if (selectedValue === "Contact") {
+            router.push('/contact');
+        } else if (selectedValue === "Review") {
+            router.push('/review'); // เพิ่มเงื่อนไขนี้
         } else if (selectedValue === "Logout") {
             // Logic สำหรับ Logout (ล้าง session, token, etc.)
             console.log('Logout clicked');
@@ -300,6 +304,8 @@ export default function Home() {
                         <option value="" className="text-gray-500">HOME</option>
                         <option value="Login" className="text-green-500">Login</option>
                         <option value="Profile" className="text-purple-500">Profile</option>
+                        <option value="Contact" className="text-blue-500">About Us</option>
+                        <option value="Review" className="text-yellow-500">Review</option>
                         <option value="Logout" className="text-red-500">Logout</option>
                     </select>
                     <select
