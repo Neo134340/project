@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { FaStar } from 'react-icons/fa';
 
 const CreateReviewPage: React.FC = () => {
     const router = useRouter();
@@ -43,80 +44,90 @@ const CreateReviewPage: React.FC = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-yellow-100">
-            <div className="bg-white shadow-md rounded-lg px-10 py-8 mb-4 w-full max-w-md">
-                <h2 className="block text-gray-700 text-2xl font-bold text-center mb-6">เขียนรีวิว</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+        <div className="min-h-screen bg-gray-100 py-12 flex justify-center items-center">
+            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+                <h2 className="block text-gray-800 text-3xl font-bold text-center mb-8 uppercase tracking-wide">
+                    <span className="text-black">เขียน</span> <span className="text-gray-600">รีวิว</span>
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
                             ชื่อ:
                         </label>
                         <input
-                            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="name"
                             type="text"
+                            id="name"
+                            className="shadow appearance-none border rounded-md w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="rating">
+                    <div>
+                        <label htmlFor="rating" className="block text-gray-700 text-sm font-bold mb-2">
                             คะแนน:
                         </label>
-                        <select
-                            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="rating"
-                            value={rating}
-                            onChange={(e) => setRating(parseInt(e.target.value))}
-                        >
-                            <option value={1}>⭐</option>
-                            <option value={2}>⭐⭐</option>
-                            <option value={3}>⭐⭐⭐</option>
-                            <option value={4}>⭐⭐⭐⭐</option>
-                            <option value={5}>⭐⭐⭐⭐⭐</option>
-                        </select>
+                        <div className="relative">
+                            <select
+                                id="rating"
+                                className="shadow appearance-none border rounded-md w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-8"
+                                value={rating}
+                                onChange={(e) => setRating(parseInt(e.target.value))}
+                            >
+                                <option value={1}>⭐</option>
+                                <option value={2}>⭐⭐</option>
+                                <option value={3}>⭐⭐⭐</option>
+                                <option value={4}>⭐⭐⭐⭐</option>
+                                <option value={5}>⭐⭐⭐⭐⭐</option>
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="comment">
+                    <div>
+                        <label htmlFor="comment" className="block text-gray-700 text-sm font-bold mb-2">
                             ความคิดเห็น:
                         </label>
                         <textarea
-                            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="comment"
                             rows={5}
+                            className="shadow appearance-none border rounded-md w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+                    <div>
+                        <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">
                             รูปภาพรีวิว (Optional):
                         </label>
                         <input
-                            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="image"
                             type="file"
+                            id="image"
                             accept="image/*"
                             onChange={handleImageChange}
+                            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
                         {previewImage && (
-                            <div className="mt-2">
-                                <img src={previewImage} alt="ภาพตัวอย่างรีวิว" className="max-h-48 rounded-md" />
+                            <div className="mt-3">
+                                <img src={previewImage} alt="ภาพตัวอย่างรีวิว" className="max-h-48 rounded-md shadow-md" />
                             </div>
                         )}
                     </div>
-                    {errorMessage && <p className="text-red-500 text-sm mb-2">{errorMessage}</p>}
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                     <div className="flex items-center justify-between">
                         <button
-                            className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                             type="submit"
+                            className={`bg-black hover:bg-gray-800 text-white font-semibold py-3 px-5 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? 'กำลังส่ง...' : 'ส่งรีวิว'}
                         </button>
-                        <Link href="/review" className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        <Link
+                            href="/review"
+                            className="inline-block align-baseline font-semibold text-sm text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out"
+                        >
                             ยกเลิก
                         </Link>
                     </div>
