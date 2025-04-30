@@ -93,13 +93,15 @@ const ProductCard: React.FC<{ outfit: Outfit; onAddToCart: (item: { outfit: Outf
 
     return (
         <div className="bg-white p-4 shadow-md rounded-lg flex flex-col justify-between">
-            <div className="aspect-w-1 aspect-h-1 relative overflow-hidden rounded-md mb-2">
-                <img
-                    src={outfit.image}
-                    alt={outfit.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-            </div>
+            <Link href={`/product/${outfit.id}`}>
+                <div className="aspect-w-1 aspect-h-1 relative overflow-hidden rounded-md mb-2 cursor-pointer">
+                    <img
+                        src={outfit.image}
+                        alt={outfit.name}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                </div>
+            </Link>
             <h3 className="text-lg font-semibold text-gray-800 mb-1">{outfit.name}</h3>
             <p className="text-sm text-gray-500 mb-1">{outfit.brand}</p>
             <p className="text-sm text-indigo-600 font-semibold">฿ {outfit.price}</p>
