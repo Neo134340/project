@@ -215,7 +215,12 @@ export default function Home() {
                 )}
             </div>
 
-                        <Link
+            <div className="text-xl font-semibold text-gray-800 mt-2">
+                {cartCount > 0 ? `Cart: ${cartCount} items` : "Your Cart is Empty"}
+            </div>
+
+
+            <Link
                 href="/admin"
                 className="fixed bottom-24 right-8 z-50 bg-gradient-to-br from-white to-black text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:from-gray-100 hover:to-gray-800 transition cursor-pointer text-xl"
             >

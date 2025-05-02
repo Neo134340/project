@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link'; // ไม่มีการติดตั้งเพิ่มเติม เพราะ Next.js มีให้อยู่แล้ว
 
 interface UserProfile {
     name: string;
@@ -11,49 +11,31 @@ interface UserProfile {
     profileImage?: string;
 }
 
-interface RentalStatus {
-    rentalId: string;
-    outfitName: string;
-    rentalDate: string;
-    returnDate: string;
-    status: "กำลังเตรียม" | "ระหว่างจัดส่ง" | "กำลังใช้งาน" | "ส่งคืนแล้ว";
-}
-
-const mockUserProfile: UserProfile = {
-    name: "Kim Min-ji",
-    email: "minji.kim@koreadressrental.com",
-    address: "789 Hanok Village, Seoul, South Korea",
-    phone: "+82 10-1234-5678",
-    profileImage: "/images/default-profile.png",
-};
-
-const mockRentalHistory: RentalStatus[] = [
-    {
-        rentalId: "RNT001",
-        outfitName: "ชุดฮันบกสีชมพู",
-        rentalDate: "2025-05-05",
-        returnDate: "2025-05-10",
-        status: "กำลังใช้งาน",
-    },
-    {
-        rentalId: "RNT002",
-        outfitName: "ชุดเจ้าชายโบราณ",
-        rentalDate: "2025-04-20",
-        returnDate: "2025-04-25",
-        status: "ส่งคืนแล้ว",
-    },
-    {
-        rentalId: "RNT003",
-        outfitName: "ชุดกิแซง",
-        rentalDate: "2025-05-15",
-        returnDate: "2025-05-18",
-        status: "กำลังเตรียม",
-    },
-];
-
 const ProfilePage: React.FC = () => {
-    const user = mockUserProfile;
-    const rentalHistory = mockRentalHistory;
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const email = localStorage.getItem("userEmail"); // ลองดึง email จาก localStorage หรือ sessionStorage
+        if (email) {
+            // ใช้ fetch แทน axios เพื่อดึงข้อมูลจาก API
+            fetch(`http://localhost:8081/api/customer/profile?email=${email}`)
+                .then((response) => response.json()) // แปลงข้อมูลที่รับมาเป็น JSON
+                .then((data) => {
+                    setUser(data);  // เก็บข้อมูลที่ดึงมา
+                    setLoading(false);  // เปลี่ยนสถานะให้โหลดเสร็จ
+                })
+                .catch((err) => {
+                    console.error("Error fetching profile:", err);
+                    setLoading(false); // ถ้าผิดพลาด
+                });
+        } else {
+            setLoading(false); // ถ้าไม่มี email
+        }
+    }, []);
+
+    if (loading) return <div className="text-center py-10">กำลังโหลดข้อมูล...</div>; // จะแสดงข้อความระหว่างโหลดข้อมูล
+    if (!user) return <div className="text-center py-10 text-red-600">ไม่พบข้อมูลผู้ใช้งาน</div>; // ถ้าไม่มีข้อมูล
 
     return (
         <div className="min-h-screen bg-gray-100 py-12 flex justify-center items-center fade-in">
@@ -102,29 +84,7 @@ const ProfilePage: React.FC = () => {
                     <h3 className="text-xl font-bold text-gray-800 mb-4 uppercase tracking-wide text-black">
                         <span className="text-black">สถานะ</span> <span className="text-gray-600">การเช่า</span>
                     </h3>
-                    {rentalHistory.length > 0 ? (
-                        <ul className="divide-y divide-gray-200 rounded-md shadow-sm">
-                            {rentalHistory.map((rental) => (
-                                <li key={rental.rentalId} className="py-4 px-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-gray-700 font-semibold">{rental.outfitName}</p>
-                                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-${
-                                            rental.status === 'กำลังเตรียม' ? 'yellow' :
-                                            rental.status === 'ระหว่างจัดส่ง' ? 'blue' :
-                                            rental.status === 'กำลังใช้งาน' ? 'green' :
-                                            'gray'
-                                        }-200 text-gray-800`}>
-                                            {rental.status}
-                                        </span>
-                                    </div>
-                                    <p className="text-gray-500 text-sm mt-1">วันที่เช่า: {rental.rentalDate}</p>
-                                    <p className="text-gray-500 text-sm">วันที่คืน: {rental.returnDate}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-600 py-4 text-center bg-white rounded-md shadow-sm">ไม่มีประวัติการเช่าชุด</p>
-                    )}
+                    {/* สามารถดึงประวัติการเช่าเพิ่มเติมจาก API ตามที่ต้องการ */}
                 </div>
 
                 <div className="mt-8 flex justify-between items-center">

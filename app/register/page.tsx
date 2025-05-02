@@ -15,8 +15,28 @@ const RegisterPage: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         console.log('สมัครสมาชิก:', { name, email, password, address, phone });
-        router.push('/login');
+
+        try {
+            const response = await fetch('http://localhost:8081/api/customer/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, address, phone }),
+            });
+
+            if (response.ok) {
+                localStorage.setItem('userEmail', email); // ✅ เก็บ email
+                alert("คุณเป็นสมาชิกกับเราสำเร็จ");
+                router.push('/profile'); // ✅ ไปหน้าโปรไฟล์
+            } else {
+                const error = await response.text();
+                alert(error);
+            }
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาด:", error);
+            alert("เกิดข้อผิดพลาดในการสมัครสมาชิก");
+        }
     };
+
 
     return (
         <div className="min-h-screen bg-white flex justify-center items-center">
