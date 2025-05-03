@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import AddNewProduct from './components/AddNewProduct';
 import { useRouter } from 'next/navigation';
 
 // --- ประเภทข้อมูลและสถานะ ---
