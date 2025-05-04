@@ -22,6 +22,10 @@ const LoginPage: React.FC = () => {
     });
 
     if (response.ok) {
+      const data = await response.json(); // ดึงข้อมูลที่ backend ส่งกลับมา
+      localStorage.setItem('token', data.token); // เก็บ token
+      localStorage.setItem('userId', data.userId); // เก็บ userId ไว้เรียกใช้ตอนดึงข้อมูลผู้ใช้
+
       alert("เข้าสู่ระบบสำเร็จ");
       setIsLoggedIn(true); // เปลี่ยนสถานะเป็น Logged In
       router.push('/'); // เปลี่ยนเส้นทางไปหน้าแรก

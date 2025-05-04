@@ -2,7 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Outfit } from '../page';
+import  Outfit  from '../page';
+import { useEffect } from "react";
+
+export interface Outfit {
+    id: string;
+    image: string;
+    name: string;
+    brand: string;
+    price: number;
+    sizes: string[];
+    colors?: string[];
+    status?: "ใหม่" | "ลดราคา";
+}
 
 interface CartItem extends Outfit {
     quantity: number;
@@ -37,6 +49,32 @@ export default function CheckoutPage() {
     const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
     const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+    //ดึงข้อมูลผู้ใช้ตอนล้อคอิน---> เหวินเพิ่มเข้ามา ห้ามแก้
+    useEffect(() => {
+        const fetchUser = async () => {
+            const email = localStorage.getItem('userEmail');
+            if (!email) return;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/customer/email/${email}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setShippingInfo({
+                        name: data.name || "",
+                        address: data.address || "",
+                        phoneNumber: data.phone || "", // ใส่ชือ่ฐานข้อมูล
+                    });
+                } else {
+                    console.error("ไม่สามารถโหลดข้อมูลผู้ใช้");
+                }
+            } catch (err) {
+                console.error("เกิดข้อผิดพลาดในการดึงข้อมูล", err);
+            }
+        };
+
+        fetchUser();
+    }, []);//----- ถึงนี้
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setShippingInfo(prev => ({
@@ -55,6 +93,7 @@ export default function CheckoutPage() {
             reader.readAsDataURL(file);
         }
     };
+
 
     const handleCheckout = () => {
         console.log("ดำเนินการสั่งซื้อ:", shippingInfo, "รายการ:", cartItems, "ยอดรวม:", totalPrice);
