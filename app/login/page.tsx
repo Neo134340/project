@@ -25,6 +25,8 @@ const LoginPage: React.FC = () => {
       const data = await response.json(); // ดึงข้อมูลที่ backend ส่งกลับมา
       localStorage.setItem('token', data.token); // เก็บ token
       localStorage.setItem('userId', data.userId); // เก็บ userId ไว้เรียกใช้ตอนดึงข้อมูลผู้ใช้
+      localStorage.setItem('userEmail', email); // ✅ เพิ่ม email ผู้ใช้ไว้ใน localStorage
+
 
       alert("เข้าสู่ระบบสำเร็จ");
       setIsLoggedIn(true); // เปลี่ยนสถานะเป็น Logged In

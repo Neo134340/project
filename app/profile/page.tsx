@@ -18,7 +18,7 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const email = localStorage.getItem("userEmail"); // ลองดึง email จาก localStorage หรือ sessionStorage
         if (email) {
-            // ใช้ fetch แทน axios เพื่อดึงข้อมูลจาก API
+            // ดึงข้อมูล
             fetch(`http://localhost:8081/api/customer/profile?email=${email}`)
                 .then((response) => response.json()) // แปลงข้อมูลที่รับมาเป็น JSON
                 .then((data) => {
