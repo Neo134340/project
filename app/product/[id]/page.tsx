@@ -56,113 +56,7 @@ const outfitsData: Outfit[] = [
             "https://via.placeholder.com/600/777777/FFFFFF?Text=Image+2_2",
             "https://via.placeholder.com/600/999999/FFFFFF?Text=Image+3_2",
         ],
-    },
-    {
-        id: "3",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "ชุดปาร์ตี้",
-        brand: "แบรนด์ Z",
-        price: 1250,
-        sizes: ["S", "L"],
-        colors: ["#80B7A2", "#BEABA7"],
-        otherImages: [
-            "https://via.placeholder.com/600/AAAAAA/FFFFFF?Text=Image+2_3",
-            "https://via.placeholder.com/600/CCCCCC/FFFFFF?Text=Image+3_3",
-        ],
-    },
-    {
-        id: "4",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Sportswear",
-        brand: "Sporty Brand",
-        price: 790,
-        sizes: ["XS", "M"],
-        colors: ["blue"],
-        otherImages: [
-            "https://via.placeholder.com/600/DDDDDD/000000?Text=Image+2_4",
-            "https://via.placeholder.com/600/EEEEEE/000000?Text=Image+3_4",
-        ],
-    },
-    {
-        id: "5",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Summer Outfit",
-        brand: "Summer Brand",
-        price: 850,
-        sizes: ["S", "M", "L"],
-        colors: ["yellow", "orange", "skyblue"],
-        otherImages: [
-            "https://via.placeholder.com/600/F0F0F0/000000?Text=Image+2_5",
-            "https://via.placeholder.com/600/F8F8F8/000000?Text=Image+3_5",
-        ],
-    },
-    {
-        id: "6",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "New Fashion Set",
-        brand: "Brand A+",
-        price: 1690,
-        sizes: ["M"],
-        status: "ใหม่",
-        colors: ["green"],
-        otherImages: [
-            "https://via.placeholder.com/600/222222/FFFFFF?Text=Image+2_6",
-            "https://via.placeholder.com/600/444444/FFFFFF?Text=Image+3_6",
-        ],
-    },
-    {
-        id: "7",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Classic Outfit",
-        brand: "Brand B+",
-        price: 1190,
-        sizes: ["S", "L"],
-        status: "ลดราคา",
-        colors: ["brown"],
-        otherImages: [
-            "https://via.placeholder.com/600/666666/FFFFFF?Text=Image+2_7",
-            "https://via.placeholder.com/600/888888/FFFFFF?Text=Image+3_7",
-        ],
-    },
-    {
-        id: "8",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Elegant Set",
-        brand: "Brand C+",
-        price: 1990,
-        sizes: ["M", "L", "XL"],
-        colors: ["pink"],
-        otherImages: [
-            "https://via.placeholder.com/600/AAAAAA/000000?Text=Image+2_8",
-            "https://via.placeholder.com/600/CCCCCC/000000?Text=Image+3_8",
-        ],
-    },
-    {
-        id: "9",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Modern Outfit",
-        brand: "Brand D+",
-        price: 1350,
-        sizes: ["S"],
-        colors: ["purple"],
-        otherImages: [
-            "https://via.placeholder.com/600/DDDDDD/FFFFFF?Text=Image+2_9",
-            "https://via.placeholder.com/600/EEEEEE/FFFFFF?Text=Image+3_9",
-        ],
-    },
-    {
-        id: "10",
-        image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/36fd7/44/s0dWLfWXStJlYnd3qU-kFgkr0HA.png",
-        name: "Vintage Style Set",
-        brand: "Brand E+",
-        price: 1090,
-        sizes: ["M", "L"],
-        colors: ["cream"],
-        otherImages: [
-            "https://via.placeholder.com/600/F0F0F0/000000?Text=Image+2_10",
-            "https://via.placeholder.com/600/F8F8F8/000000?Text=Image+3_10",
-        ],
-    },
+    }
 ];
 
 export default function ProductDetailPage() {
@@ -184,7 +78,7 @@ export default function ProductDetailPage() {
             const storedCart = localStorage.getItem("cartItemsWithDetails");
             let cartItems: { [key: string]: CartItem } = storedCart ? JSON.parse(storedCart) : {};
 
-            const key = `<span class="math-inline">\{outfit\.id\}\-</span>{selectedSize}-${selectedColor}`;
+            const key = `${outfit.id}-${selectedSize}-${selectedColor}`;
             if (cartItems[key]) {
                 cartItems[key].quantity += 1;
             } else {
@@ -244,7 +138,6 @@ export default function ProductDetailPage() {
             <div className="container mx-auto px-6">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-                        {/* Image Section */}
                         <div className="relative w-full aspect-w-1 aspect-h-1">
                             {currentImage() && (
                                 <Image
@@ -273,7 +166,6 @@ export default function ProductDetailPage() {
                             )}
                         </div>
 
-                        {/* Details Section */}
                         <div className="py-4">
                             <h2 className="text-2xl font-semibold text-gray-900 mb-2">{outfit?.name}</h2>
                             <p className="text-gray-500 mb-4">{outfit?.brand}</p>
@@ -281,7 +173,7 @@ export default function ProductDetailPage() {
 
                             {outfit?.status && (
                                 <div className="mb-3">
-                                    <span className={`inline-flex items-center rounded-full bg-${outfit.status === 'ใหม่' ? 'gray-200' : 'gray-200'} px-2.5 py-0.5 text-xs font-medium text-gray-700`}>
+                                    <span className="inline-flex items-center rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-medium text-gray-700">
                                         {outfit.status}
                                     </span>
                                 </div>
@@ -303,49 +195,49 @@ export default function ProductDetailPage() {
                                             {outfit.sizes.map((size) => (
                                                 <option key={size} value={size}>{size}</option>
                                             ))}
-                                            </select>
-                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                            </div>
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                         </div>
                                     </div>
-                                )}
-    
-                                {outfit?.colors && outfit.colors.length > 0 && (
-                                    <div className="mb-4">
-                                        <label htmlFor="color" className="block text-gray-700 text-sm font-medium mb-2">
-                                            สี:
-                                        </label>
-                                        <div className="relative">
-                                            <select
-                                                id="color"
-                                                className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-gray-400 text-sm"
-                                                onChange={(e) => setSelectedColor(e.target.value)}
-                                                value={selectedColor}
-                                            >
-                                                <option value="">เลือกสี</option>
-                                                {outfit.colors.map((color) => (
-                                                    <option key={color} value={color}>{color}</option>
-                                                ))}
-                                            </select>
-                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                            </div>
+                                </div>
+                            )}
+
+                            {outfit?.colors && outfit.colors.length > 0 && (
+                                <div className="mb-4">
+                                    <label htmlFor="color" className="block text-gray-700 text-sm font-medium mb-2">
+                                        สี:
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            id="color"
+                                            className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-gray-400 text-sm"
+                                            onChange={(e) => setSelectedColor(e.target.value)}
+                                            value={selectedColor}
+                                        >
+                                            <option value="">เลือกสี</option>
+                                            {outfit.colors.map((color) => (
+                                                <option key={color} value={color}>{color}</option>
+                                            ))}
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                         </div>
                                     </div>
-                                )}
-    
-                                <button onClick={handleAddToCart} className="bg-black text-white py-3 rounded-md hover:bg-gray-800 transition w-full font-semibold text-sm">
-                                    เพิ่มลงตะกร้า
-                                </button>
-    
-                                <Link href="/" className="inline-block mt-4 text-gray-500 hover:text-gray-700 text-sm">
-                                    ← กลับไปหน้าหลัก
-                                </Link>
-                            </div>
+                                </div>
+                            )}
+
+                            <button onClick={handleAddToCart} className="bg-black text-white py-3 rounded-md hover:bg-gray-800 transition w-full font-semibold text-sm">
+                                เพิ่มลงตะกร้า
+                            </button>
+
+                            <Link href="/" className="inline-block mt-4 text-gray-500 hover:text-gray-700 text-sm">
+                                ← กลับไปหน้าหลัก
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+}
