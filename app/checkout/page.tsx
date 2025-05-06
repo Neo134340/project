@@ -92,8 +92,8 @@ export default function CheckoutPage() {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-       alert("ไม่มีสินค้าในตะกร้า");
-       return;
+      alert("ไม่มีสินค้าในตะกร้า");
+      return;
     }
 
     if (!shippingInfo.name || !shippingInfo.address || !shippingInfo.phoneNumber) {
@@ -102,8 +102,8 @@ export default function CheckoutPage() {
     }
 
     if (!qrCodeImage) {
-       alert("กรุณาอัปโหลดหลักฐานการชำระเงิน");
-       return;
+      alert("กรุณาอัปโหลดหลักฐานการชำระเงิน");
+      return;
     }
 
     console.log("ข้อมูลจัดส่ง:", shippingInfo);
@@ -112,6 +112,9 @@ export default function CheckoutPage() {
     console.log("หลักฐานการชำระเงิน (Base64):", qrCodeImage);
 
     alert("ดำเนินการสั่งซื้อและอัปโหลดหลักฐานการชำระเงินแล้ว! (ขั้นตอนต่อไปคือการส่งข้อมูลนี้ไปยัง Backend)");
+
+    // 👇 กลับไปยังหน้าหลักหลังจากยืนยันการสั่งซื้อ
+    router.push('/');
   };
 
    if (cartItems.length === 0) {
@@ -216,4 +219,4 @@ export default function CheckoutPage() {
 }
 
 const inputStyle =
-  "shadow appearance-none border border-pink-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400";
+  "shadow appearance-none border border-pink-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400";

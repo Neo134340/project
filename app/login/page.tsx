@@ -1,4 +1,4 @@
-"use client"; // Ensure the client-side execution
+'use client'; // Ensure the client-side execution
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,10 +10,11 @@ const LoginPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State สำหรับตรวจสอบสถานะ Login
   const router = useRouter();
 
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log('เข้าสู่ระบบ:', { email, password });
-
+ 
     // เรียก API ตรวจสอบการเข้าสู่ระบบ ---> เหวินเพิ่มเข้ามาหลังบ้าน
     const response = await fetch('http://localhost:8081/api/customer/login', {
       method: 'POST',
@@ -26,10 +27,17 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('token', data.token); // เก็บ token
       localStorage.setItem('userId', data.userId); // เก็บ userId ไว้เรียกใช้ตอนดึงข้อมูลผู้ใช้
       localStorage.setItem('userEmail', email); // ✅ เพิ่ม email ผู้ใช้ไว้ใน localStorage
+      localStorage.setItem('role', data.role); // ✅ เพิ่ม role เพื่อใช้ในภายหลัง
 
       alert("เข้าสู่ระบบสำเร็จ");
       setIsLoggedIn(true); // เปลี่ยนสถานะเป็น Logged In
-      router.push('/'); // เปลี่ยนเส้นทางไปหน้าแรก
+
+      // ถ้าเป็น ADMIN ให้ไปหน้าแอดมิน ถ้าเป็น USER ให้ไปหน้าโปรไฟล์
+      if (data.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/profile');
+      }
     } else {
       const error = await response.text();
       alert(error); // แจ้งข้อผิดพลาด

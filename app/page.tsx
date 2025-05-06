@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Ensure the client-side execution
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -7,8 +7,11 @@ import { FaUserCog } from 'react-icons/fa';
 import ProductCard from './components/ProductCard';
 import AddNewProduct, { NewProduct } from '@/app/admin/components/AddNewProduct';
 
+// Interfaces ยังคงเหมือนเดิม
 interface Outfit { id: string; image: string; name: string; brand: string; price: number; sizes: string[]; colors?: string[]; status?: "ใหม่" | "ลดราคา"; }
+// ตรวจสอบ interface OtherProduct ดูเหมือนจะมี 'string: string' ซ้ำกัน อาจจะเป็น name หรือ brand ครับ
 interface OtherProduct { id: string; image: string; name: string; brand: string; }
+
 
 const getInitialCartItems = (): { [id: string]: { outfit: Outfit; quantity: number; size?: string; color?: string } } =>
   typeof window !== 'undefined'
@@ -20,7 +23,7 @@ const initialOutfits: Outfit[] = [
   { id: "2", image: "https://cdn.wconcept.com/products/resize/632x843/migration/i/imgpin.wconceptusa.com/18647a1de60/26839/49/pE2IPlnI73EQ0pkY9OH1bw9XqM.png", name: "Luxury Work Outfit", brand: "Brand Y", price: 1590, sizes: ["M", "L"], status: "ลดราคา", colors: ["#F898A4"] },
 ];
 
-const otherProducts: OtherProduct[] = [];
+const otherProducts: OtherProduct[] = []; // ตรวจสอบการใช้งาน otherProducts ในโค้ด ถ้าไม่ได้ใช้ สามารถลบได้ครับ
 
 export default function Home() {
   const [cartCount, setCartCount] = useState(0);
@@ -31,6 +34,9 @@ export default function Home() {
   const [filteredOutfits, setFilteredOutfits] = useState<Outfit[]>(initialOutfits);
   const [newProducts, setNewProducts] = useState<Outfit[]>([]);
 
+  // ส่วนที่ต้องมี: State สำหรับเก็บ Role ของผู้ใช้งานที่ Login
+  const [userRole, setUserRole] = useState<string | null>(null); // เก็บค่า Role เป็น String หรือ null
+
   const handleAddToCart = (item: { outfit: Outfit; size?: string; color?: string }) => {
     const key = `${item.outfit.id}-${item.size}-${item.color}`;
     setCartItems(prevItems => ({ ...prevItems, [key]: { ...item, quantity: (prevItems[key]?.quantity || 0) + 1 } }));
@@ -38,13 +44,21 @@ export default function Home() {
 
   const handleLogout = () => {
     if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
-      localStorage.removeItem("user");
+      // ลบข้อมูลผู้ใช้งานและ Role ออกจาก localStorage เมื่อ Logout
+      localStorage.removeItem("user"); // อาจจะลบ key "user" ถ้าใช้เก็บทั้ง Object
+      localStorage.removeItem("token"); // ลบ token
+      localStorage.removeItem("userId"); // ลบ userId
+      localStorage.removeItem("userEmail"); // ลบ userEmail
+      localStorage.removeItem("role"); // **สำคัญ:** ลบ Role ด้วย
       localStorage.removeItem("cartItemsWithDetails");
+
       setCartItems({});
-      router.push("/");
+      setUserRole(null); // รีเซ็ตค่า Role ใน state
+      router.push("/"); // Redirect ไปหน้าแรก
     }
   };
 
+   // ปรับปรุง handleNavigation เพื่อให้ Logout ล้างค่า userRole ใน state ด้วย
   const handleNavigation = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
@@ -57,28 +71,34 @@ export default function Home() {
     e.target.value = "";
   };
 
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    filterOutfits(term, selectedBrand);
+    filterOutfits(term, selectedBrand); // ควรใช้ selectedBrand ด้วยในการ filter
   };
 
+  // ส่วนนี้มีอยู่แล้ว แต่ไม่มีการใช้งาน State selectedBrand
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const brand = e.target.value;
     setSelectedBrand(brand);
-    filterOutfits(searchTerm, brand);
+    filterOutfits(searchTerm, brand); // เรียก filter พร้อม brand
   };
 
+  // ปรับปรุง filterOutfits ให้ใช้ brand ด้วย
   const filterOutfits = (term: string, brand: string) => {
-    const filtered = initialOutfits.filter(outfit => {
-      const matchesSearchTerm = outfit.name.toLowerCase().includes(term);
-      const matchesBrand = brand ? outfit.brand === brand : true;
-      return matchesSearchTerm && matchesBrand;
-    });
-    setFilteredOutfits(filtered);
-  };
+     const filtered = initialOutfits.filter(outfit => {
+       const matchesSearchTerm = outfit.name.toLowerCase().includes(term);
+       const matchesBrand = brand ? outfit.brand === brand : true; // กรองตาม brand ถ้ามีการเลือก brand
+       return matchesSearchTerm && matchesBrand;
+     });
+     setFilteredOutfits(filtered);
+   };
+
 
   const handleAddNewProduct = (newProductData: NewProduct) => {
+    // **หมายเหตุ:** ในระบบจริง การเพิ่มสินค้าใหม่ควรเรียก API Backend เพื่อบันทึกลงฐานข้อมูล
+    // โค้ดส่วนนี้เป็นการเพิ่มใน State ของ Frontend เท่านั้น
     const newOutfit: Outfit = {
       id: `new-${Date.now()}`,
       image: newProductData.images[0] ? URL.createObjectURL(newProductData.images[0]) : "https://via.placeholder.com/300/CCCCCC/000000?Text=New+Product",
@@ -90,13 +110,25 @@ export default function Home() {
       status: newProductData.status,
     };
     setNewProducts(prevProducts => [...prevProducts, newOutfit]);
-    console.log('เพิ่มสินค้าใหม่ที่หน้า Home:', newOutfit);
+    console.log('เพิ่มสินค้าใหม่ที่หน้า Home (Frontend State):', newOutfit);
   };
 
+  // ส่วนที่ต้องมี: useEffect สำหรับโหลด Role ของผู้ใช้งานเมื่อ Component Mount
+  // โค้ดส่วนนี้จะอ่านค่า "role" จาก localStorage และนำมาตั้งค่า userRole state
   useEffect(() => {
     setCartCount(Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0));
     localStorage.setItem("cartItemsWithDetails", JSON.stringify(cartItems));
-  }, [cartItems]);
+
+    // อ่านค่า Role จาก localStorage ที่บันทึกไว้ตอน Login
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setUserRole(storedRole); // ตั้งค่า Role ใน State ของ Component
+    } else {
+        setUserRole(null); // ถ้าไม่มี role ใน localStorage แสดงว่ายังไม่ Login หรือ Login ไม่สำเร็จ
+    }
+
+
+  }, [cartItems]); // Dependency array: ทำงานเมื่อ cartItems เปลี่ยน หรือเมื่อ Component Mount ครั้งแรก
 
   const allOutfits = [...filteredOutfits, ...newProducts];
 
@@ -111,11 +143,20 @@ export default function Home() {
             defaultValue=""
           >
             <option value="" className="text-gray-500">Home</option>
-            <option value="Login" className="text-rose-700 hover:bg-rose-50 transition">Login</option>
-            <option value="Profile" className="text-rose-700 hover:bg-rose-50 transition">Profile</option>
+             {/* แสดง Login ถ้ายังไม่มี Role (ยังไม่ Login หรือ Logout ไปแล้ว) */}
+             {userRole === null && (
+                <option value="Login" className="text-rose-700 hover:bg-rose-50 transition">Login</option>
+             )}
+            {/* แสดง Profile ถ้า Login แล้ว */}
+             {userRole !== null && (
+                <option value="Profile" className="text-rose-700 hover:bg-rose-50 transition">Profile</option>
+             )}
             <option value="Contact" className="text-rose-700 hover:bg-rose-50 transition">About Us</option>
             <option value="Review" className="text-rose-700 hover:bg-rose-50 transition">Review</option>
-            <option value="Logout" className="text-rose-700 hover:bg-rose-50 transition">Logout</option>
+            {/* แสดง Logout ถ้า Login แล้ว */}
+            {userRole !== null && (
+                 <option value="Logout" className="text-rose-700 hover:bg-rose-50 transition">Logout</option>
+            )}
           </select>
         </div>
 
@@ -128,17 +169,22 @@ export default function Home() {
             onChange={handleSearch}
           />
           <select
-            className="shadow-md focus:ring-rose-400 focus:border-rose-400 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
-            value={selectedBrand}
-            onChange={handleBrandChange}
-          >
+             className="shadow-md focus:ring-rose-400 focus:border-rose-400 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
+             value={selectedBrand} // เพิ่ม value และ onChange
+             onChange={handleBrandChange}
+           >
             <option value="" className="text-gray-500">All Brands</option>
             <option value="Brand X" className="text-rose-700 hover:bg-rose-50 transition">Brand X</option>
             <option value="Brand Y" className="text-rose-700 hover:bg-rose-50 transition">Brand Y</option>
           </select>
         </div>
 
-        <AddNewProduct onProductAdded={handleAddNewProduct} />
+        {/* ส่วนที่ต้องมี: แสดง AddNewProduct เฉพาะ Admin */}
+        {/* ใช้เงื่อนไข userRole === 'ADMIN' && (...) ในการแสดง */}
+        {userRole === 'ADMIN' && ( // โค้ดส่วนนี้จะทำให้ Component AddNewProduct แสดงเฉพาะ Admin
+            <AddNewProduct onProductAdded={handleAddNewProduct} />
+        )}
+
 
         <h2 className="text-2xl font-semibold text-rose-700 mb-4">Our Outfits</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
@@ -163,12 +209,16 @@ export default function Home() {
           </Link>
         </div>
 
-        <Link
-          href="/admin"
-          className="fixed bottom-24 right-8 z-50 bg-gradient-to-br from-rose-200 to-rose-800 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:from-rose-100 hover:to-rose-700 transition cursor-pointer text-xl"
-        >
-          <FaUserCog size={24} />
-        </Link>
+        {/* ส่วนที่ต้องมี: แสดงปุ่ม Admin เฉพาะ Admin */}
+        {/* ใช้เงื่อนไข userRole === 'ADMIN' && (...) ในการแสดง */}
+        {userRole === 'ADMIN' && ( // โค้ดส่วนนี้จะทำให้ปุ่มไอคอน Admin แสดงเฉพาะ Admin
+            <Link
+              href="/admin"
+              className="fixed bottom-24 right-8 z-50 bg-gradient-to-br from-rose-200 to-rose-800 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:from-rose-100 hover:to-rose-700 transition cursor-pointer text-xl"
+            >
+              <FaUserCog size={24} />
+            </Link>
+        )}
       </div>
     </div>
   );
