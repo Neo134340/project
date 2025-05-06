@@ -27,6 +27,7 @@ export default function Home() {
   const [cartItems, setCartItems] = useState(getInitialCartItems());
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState<string>(''); // สำหรับกรองแบรนด์
   const [filteredOutfits, setFilteredOutfits] = useState<Outfit[]>(initialOutfits);
   const [newProducts, setNewProducts] = useState<Outfit[]>([]);
 
@@ -35,16 +36,46 @@ export default function Home() {
     setCartItems(prevItems => ({ ...prevItems, [key]: { ...item, quantity: (prevItems[key]?.quantity || 0) + 1 } }));
   };
 
+  const handleLogout = () => {
+    if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("cartItemsWithDetails");
+      setCartItems({});
+      router.push("/");
+    }
+  };
+
   const handleNavigation = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    if (value) router.push(value === "" ? "/" : `/${value.toLowerCase()}`);
+
+    if (value === "Logout") {
+      handleLogout();
+    } else if (value) {
+      router.push(`/${value.toLowerCase()}`);
+    }
+
     e.target.value = "";
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    setFilteredOutfits(initialOutfits.filter(outfit => outfit.name.toLowerCase().includes(term)));
+    filterOutfits(term, selectedBrand);
+  };
+
+  const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const brand = e.target.value;
+    setSelectedBrand(brand);
+    filterOutfits(searchTerm, brand);
+  };
+
+  const filterOutfits = (term: string, brand: string) => {
+    const filtered = initialOutfits.filter(outfit => {
+      const matchesSearchTerm = outfit.name.toLowerCase().includes(term);
+      const matchesBrand = brand ? outfit.brand === brand : true;
+      return matchesSearchTerm && matchesBrand;
+    });
+    setFilteredOutfits(filtered);
   };
 
   const handleAddNewProduct = (newProductData: NewProduct) => {
@@ -73,9 +104,9 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-rose-700 shadow-md p-3 rounded-lg bg-pink-100/80">Rent Your Style</h1>
+          <h1 className="text-3xl font-bold text-rose-600 shadow-md p-3 rounded-lg bg-pink-100/80">Rent Your Style</h1>
           <select
-            className="shadow-md focus:ring-rose-500 focus:border-rose-500 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
+            className="shadow-md focus:ring-rose-400 focus:border-rose-400 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
             onChange={handleNavigation}
             defaultValue=""
           >
@@ -92,12 +123,14 @@ export default function Home() {
           <input
             type="text"
             placeholder="Search outfit names..."
-            className="shadow-sm focus:ring-rose-500 focus:border-rose-500 block w-full sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700"
+            className="shadow-sm focus:ring-rose-400 focus:border-rose-400 block w-full sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700"
             value={searchTerm}
             onChange={handleSearch}
           />
           <select
-            className="shadow-md focus:ring-rose-500 focus:border-rose-500 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
+            className="shadow-md focus:ring-rose-400 focus:border-rose-400 block sm:text-sm border border-rose-300 rounded-md py-2 px-3 text-rose-700 appearance-none bg-white cursor-pointer"
+            value={selectedBrand}
+            onChange={handleBrandChange}
           >
             <option value="" className="text-gray-500">All Brands</option>
             <option value="Brand X" className="text-rose-700 hover:bg-rose-50 transition">Brand X</option>
@@ -107,13 +140,13 @@ export default function Home() {
 
         <AddNewProduct onProductAdded={handleAddNewProduct} />
 
-        <h2 className="text-2xl font-semibold text-rose-800 mb-4">Our Outfits</h2>
+        <h2 className="text-2xl font-semibold text-rose-700 mb-4">Our Outfits</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
           {allOutfits.map(outfit => <ProductCard key={outfit.id} outfit={outfit} onAddToCart={handleAddToCart} />)}
         </div>
 
         <div className="flex justify-center mb-8">
-          <button className="bg-rose-200 text-rose-700 px-5 py-2 rounded-md hover:bg-rose-300 transition shadow-sm">See More Outfits +</button>
+          <button className="bg-rose-100 text-rose-700 px-5 py-2 rounded-md hover:bg-rose-200 transition shadow-sm">See More Outfits +</button>
         </div>
 
         <div className="relative">

@@ -24,9 +24,9 @@ const RegisterPage: React.FC = () => {
             });
 
             if (response.ok) {
-                localStorage.setItem('userEmail', email); // ✅ เก็บ email
+                localStorage.setItem('userEmail', email);
                 alert("คุณเป็นสมาชิกกับเราสำเร็จ");
-                router.push('/profile'); // ✅ ไปหน้าโปรไฟล์
+                router.push('/profile');
             } else {
                 const error = await response.text();
                 alert(error);
@@ -37,20 +37,19 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-
     return (
-        <div className="min-h-screen bg-white flex justify-center items-center">
-            <div className="bg-gray-100 shadow-md rounded-lg px-12 py-10 w-full max-w-md">
-                <h2 className="block text-gray-800 text-2xl font-semibold text-center mb-8 uppercase tracking-wider">
-                    <span className="text-gray-800">สมัคร</span> <span className="text-gray-500">สมาชิก</span>
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 flex justify-center items-center">
+            <div className="bg-white shadow-lg rounded-lg px-12 py-10 w-full max-w-md border border-pink-200">
+                <h2 className="text-pink-600 text-2xl font-bold text-center mb-8 uppercase tracking-wider">
+                    <span className="text-pink-600">สมัคร</span> <span className="text-pink-400">สมาชิก</span>
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label htmlFor="name" className="block text-gray-700 text-sm font-medium mb-1">
+                        <label htmlFor="name" className="block text-pink-600 text-sm font-medium mb-1">
                             ชื่อผู้ใช้
                         </label>
                         <input
-                            className="appearance-none border border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="appearance-none border border-pink-300 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400"
                             id="name"
                             type="text"
                             placeholder="ชื่อของคุณ"
@@ -59,11 +58,11 @@ const RegisterPage: React.FC = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">
+                        <label htmlFor="email" className="block text-pink-600 text-sm font-medium mb-1">
                             อีเมล
                         </label>
                         <input
-                            className="appearance-none border border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="appearance-none border border-pink-300 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400"
                             id="email"
                             type="email"
                             placeholder="your.email@example.com"
@@ -72,11 +71,11 @@ const RegisterPage: React.FC = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-1">
+                        <label htmlFor="password" className="block text-pink-600 text-sm font-medium mb-1">
                             รหัสผ่าน
                         </label>
                         <input
-                            className="appearance-none border border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="appearance-none border border-pink-300 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400"
                             id="password"
                             type="password"
                             placeholder="********"
@@ -85,11 +84,11 @@ const RegisterPage: React.FC = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="address" className="block text-gray-700 text-sm font-medium mb-1">
+                        <label htmlFor="address" className="block text-pink-600 text-sm font-medium mb-1">
                             ที่อยู่จัดส่ง
                         </label>
                         <textarea
-                            className="appearance-none border border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="appearance-none border border-pink-300 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400"
                             id="address"
                             placeholder="ที่อยู่สำหรับการจัดส่งสินค้า"
                             value={address}
@@ -97,11 +96,11 @@ const RegisterPage: React.FC = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="phone" className="block text-gray-700 text-sm font-medium mb-1">
+                        <label htmlFor="phone" className="block text-pink-600 text-sm font-medium mb-1">
                             เบอร์โทรศัพท์
                         </label>
                         <input
-                            className="appearance-none border border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="appearance-none border border-pink-300 rounded-md w-full py-2 px-3 text-gray-800 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400"
                             id="phone"
                             type="tel"
                             placeholder="เบอร์โทรศัพท์ที่ติดต่อได้"
@@ -111,18 +110,18 @@ const RegisterPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <button
-                            className="bg-black text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out hover:bg-gray-800"
+                            className="bg-pink-500 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-300 hover:bg-pink-600 transition duration-300"
                             type="submit"
                         >
                             สมัครสมาชิก
                         </button>
-                        <Link href="/login" className="inline-block align-baseline font-medium text-sm text-gray-500 hover:text-gray-800 transition duration-300 ease-in-out">
+                        <Link href="/login" className="text-sm font-medium text-pink-500 hover:text-pink-700 transition duration-300">
                             เข้าสู่ระบบ
                         </Link>
                     </div>
                 </form>
                 <div className="mt-6 text-center">
-                    <Link href="/" className="inline-block align-baseline font-medium text-sm text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
+                    <Link href="/" className="text-sm font-medium text-pink-400 hover:text-pink-600 transition duration-300">
                         ย้อนกลับ
                     </Link>
                 </div>

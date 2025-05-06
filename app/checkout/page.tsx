@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-
-// 🔹 Interface สำหรับชุดสินค้าและสินค้าในตะกร้า
 export interface Outfit {
   id: string;
   image: string;
@@ -21,43 +19,44 @@ interface CartItem extends Outfit {
   quantity: number;
 }
 
-// 🔹 ดึงรายการสินค้าในตะกร้าจาก localStorage
-const getCartItems = (): CartItem[] => {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem("cartItemsWithDetails");
-    if (stored) {
-      try {
-        const parsed: { [key: string]: { outfit: Outfit; quantity: number } } = JSON.parse(stored);
-        return Object.values(parsed).map(item => ({
-          ...item.outfit,
-          quantity: item.quantity,
-        }));
-      } catch (error) {
-        console.error("Error parsing cart items:", error);
-      }
-    }
-  }
-  return [];
-};
-
-// 🔹 หน้า Checkout
 export default function CheckoutPage() {
-  const cartItems = getCartItems();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     address: "",
     phoneNumber: "",
   });
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-  const [adminQrCode, setAdminQrCode] = useState<string | null>(null);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const router = useRouter();
 
-  // 🔹 โหลดข้อมูลลูกค้าเมื่อเข้าสู่ระบบ
   useEffect(() => {
+    const fetchCartItems = () => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem("cartItemsWithDetails");
+        if (stored) {
+          try {
+            const parsed: { [key: string]: { outfit: Outfit; quantity: number } } = JSON.parse(stored);
+            const itemsArray = Object.values(parsed).map(item => ({
+              ...item.outfit,
+              quantity: item.quantity,
+            }));
+            setCartItems(itemsArray);
+          } catch (error) {
+            console.error("Error parsing cart items:", error);
+            setCartItems([]);
+          }
+        }
+      }
+    };
+    fetchCartItems();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const fetchUser = async () => {
       const email = localStorage.getItem('userEmail');
       if (!email) return;
-
       try {
         const res = await fetch(`http://localhost:8081/api/customer/email/${email}`);
         if (res.ok) {
@@ -74,17 +73,14 @@ export default function CheckoutPage() {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:", err);
       }
     };
-
     fetchUser();
   }, []);
 
-  // 🔹 จัดการการเปลี่ยนค่าข้อมูลผู้รับ
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  // 🔹 อัปโหลด QR Code จากผู้ใช้
   const handleQrCodeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -93,35 +89,38 @@ export default function CheckoutPage() {
       reader.readAsDataURL(file);
     }
   };
-  const router = useRouter();
 
-  // 🔹 ยืนยันคำสั่งซื้อ
   const handleCheckout = () => {
+    if (cartItems.length === 0) {
+       alert("ไม่มีสินค้าในตะกร้า");
+       return;
+    }
+
+    if (!shippingInfo.name || !shippingInfo.address || !shippingInfo.phoneNumber) {
+      alert("กรุณากรอกข้อมูลการจัดส่งให้ครบถ้วน");
+      return;
+    }
+
+    if (!qrCodeImage) {
+       alert("กรุณาอัปโหลดหลักฐานการชำระเงิน");
+       return;
+    }
+
     console.log("ข้อมูลจัดส่ง:", shippingInfo);
     console.log("สินค้าในตะกร้า:", cartItems);
     console.log("ยอดรวม:", totalPrice);
-  
-    if (qrCodeImage) {
-      alert("ดำเนินการสั่งซื้อและชำระเงินด้วย QR Code ที่คุณอัปโหลดแล้ว!");
-    } else if (adminQrCode) {
-      alert("ดำเนินการสั่งซื้อและชำระเงินด้วย QR Code จากทางร้านแล้ว!");
-    } else {
-      alert("กรุณาอัปโหลด QR Code สำหรับการชำระเงินผ่านธนาคาร");
-      return; // ❗️หยุดไม่ให้เปลี่ยนหน้า
-    }
-  
-    // ✅ เปลี่ยนหน้าไปยังหน้าหลัก
-    router.push("/");
+    console.log("หลักฐานการชำระเงิน (Base64):", qrCodeImage);
+
+    alert("ดำเนินการสั่งซื้อและอัปโหลดหลักฐานการชำระเงินแล้ว! (ขั้นตอนต่อไปคือการส่งข้อมูลนี้ไปยัง Backend)");
   };
-  
-  // 🔹 แสดงข้อความเมื่อไม่มีสินค้า
-  if (cartItems.length === 0) {
+
+   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-100 py-6 flex justify-center items-center">
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+      <div className="min-h-screen bg-pink-50 py-6 flex justify-center items-center">
+        <div className="bg-white rounded-xl shadow-md p-8 text-center">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">ตะกร้าสินค้าว่างเปล่า</h2>
           <p className="text-gray-600 mb-4">ไม่มีสินค้าอยู่ในตะกร้าของคุณ</p>
-          <Link href="/" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <Link href="/" className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">
             กลับไปเลือกสินค้า
           </Link>
         </div>
@@ -129,15 +128,14 @@ export default function CheckoutPage() {
     );
   }
 
-  // 🔹 หน้าชำระเงิน
   return (
-    <div className="min-h-screen bg-gray-100 py-6">
-      <div className="container mx-auto p-6 bg-white rounded-md shadow-md max-w-lg">
+    <div className="min-h-screen bg-pink-50 py-6">
+      <div className="container mx-auto p-6 bg-white rounded-2xl shadow-lg max-w-lg">
         <h2 className="text-3xl font-semibold mb-6 text-gray-800 text-center">ชำระเงิน</h2>
 
-        {/* 🔸 สรุปคำสั่งซื้อ */}
-        <section className="mb-6 p-4 border rounded-md bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">สรุปคำสั่งซื้อ</h3>
+        {/* 🔸 Order Summary */}
+        <section className="mb-6 p-4 border border-pink-200 rounded-xl bg-pink-50 shadow-sm">
+          <h3 className="text-lg font-semibold mb-3 text-pink-700">สรุปคำสั่งซื้อ</h3>
           <ul>
             {cartItems.map(item => (
               <li key={item.id} className="flex justify-between items-center py-2 text-gray-800">
@@ -154,63 +152,61 @@ export default function CheckoutPage() {
           <div className="text-right font-semibold mt-2">ยอดรวม: ฿ {totalPrice}</div>
         </section>
 
-        {/* 🔸 ข้อมูลจัดส่ง */}
-        <section className="mb-6 p-4 border rounded-md bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">ข้อมูลการจัดส่ง</h3>
+        {/* 🔸 Shipping Info */}
+        <section className="mb-6 p-4 border border-pink-200 rounded-xl bg-pink-50 shadow-sm">
+          <h3 className="text-lg font-semibold mb-3 text-pink-700">ข้อมูลการจัดส่ง</h3>
           <div className="mb-3">
             <label className="block text-sm font-bold mb-1 text-gray-700">ชื่อ-นามสกุล:</label>
-            <input type="text" name="name" value={shippingInfo.name} onChange={handleInputChange}
-              className="input-style" required />
+            <input type="text" name="name" placeholder="สมชาย ใจดี"
+              value={shippingInfo.name} onChange={handleInputChange} className={inputStyle} required />
           </div>
           <div className="mb-3">
             <label className="block text-sm font-bold mb-1 text-gray-700">ที่อยู่:</label>
-            <textarea name="address" value={shippingInfo.address} onChange={handleInputChange}
-              className="input-style" required />
+            <textarea name="address" placeholder="123 หมู่ 4 ต.บางรัก อ.เมือง จ.กรุงเทพฯ"
+              value={shippingInfo.address} onChange={handleInputChange} className={inputStyle} required />
           </div>
           <div className="mb-3">
             <label className="block text-sm font-bold mb-1 text-gray-700">เบอร์โทรศัพท์:</label>
-            <input type="tel" name="phoneNumber" value={shippingInfo.phoneNumber} onChange={handleInputChange}
-              className="input-style" required />
+            <input type="tel" name="phoneNumber" placeholder="0812345678"
+              value={shippingInfo.phoneNumber} onChange={handleInputChange} className={inputStyle} required />
           </div>
         </section>
 
-        {/* 🔸 QR Code จากร้านค้า */}
-        <section className="mb-6 p-4 border rounded-md bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">QR Code ชำระเงิน (จากร้านค้า)</h3>
-          <input
-            type="text"
-            value={adminQrCode || ""}
-            onChange={(e) => setAdminQrCode(e.target.value)}
-            placeholder="ใส่ URL หรือ Base64 ของ QR Code"
-            className="input-style"
-          />
-          {adminQrCode && (
-            <div className="mt-3">
-              <img src={adminQrCode} alt="QR จากร้าน" className="max-w-full rounded-md shadow-sm" />
-            </div>
-          )}
+        {/* 🔸 Admin QR Code (ส่วนที่แสดงรูปภาพ) */}
+        <section className="mb-6 p-4 border border-pink-200 rounded-xl bg-pink-50 shadow-sm">
+          <h3 className="text-lg font-semibold mb-3 text-pink-700">QR Code ชำระเงิน (จากร้านค้า)</h3>
+          {/* แสดงรูป QR Code จากไฟล์โดยตรง */}
+          <div className="mt-3 text-center">
+            {/* Path นี้จะทำงานได้หลังจากย้ายโฟลเดอร์ imge ไปไว้ใน public แล้ว */}
+            <img
+                src="/imge/qr-code-generated-7.jpg" // <-- Path นี้ถูกต้องแล้ว เมื่อ imge อยู่ใน public
+                alt="QR จากร้าน"
+                className="max-w-full rounded-md shadow-sm inline-block transition-transform hover:scale-105 duration-200"
+            />
+          </div>
+           <p className="text-gray-600 text-xs mt-2 text-center">สแกน QR Code นี้เพื่อชำระเงิน</p>
         </section>
 
-        {/* 🔸 อัปโหลด QR Code */}
-        <section className="mb-6 p-4 border rounded-md bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">วิธีการชำระเงิน</h3>
-          <label className="block text-sm font-bold mb-1 text-gray-700">ชำระผ่าน QR Code ของคุณ:</label>
-          <input type="file" accept="image/*" onChange={handleQrCodeUpload} className="input-style" />
+        {/* 🔸 Upload หลักฐานการชำระเงิน */}
+        <section className="mb-6 p-4 border border-pink-200 rounded-xl bg-pink-50 shadow-sm">
+          <h3 className="text-lg font-semibold mb-3 text-pink-700">อัปโหลดหลักฐานการชำระเงิน</h3>
+          <label className="block text-sm font-bold mb-1 text-gray-700">อัปโหลดรูปภาพสลิปหรือ QR Code ที่ชำระแล้ว:</label>
+          <input type="file" accept="image/*" onChange={handleQrCodeUpload} className={inputStyle} />
           {qrCodeImage && (
             <div className="mt-3">
-              <img src={qrCodeImage} alt="QR Code ผู้ใช้" className="max-w-full rounded-md shadow-sm" />
+              <img src={qrCodeImage} alt="QR Code ผู้ใช้" className="max-w-full rounded-md shadow-sm transition-transform hover:scale-105 duration-200" />
             </div>
           )}
-          <p className="text-gray-600 text-xs mt-1">อัปโหลด QR Code สำหรับชำระเงินผ่านธนาคาร</p>
+          <p className="text-gray-600 text-xs mt-1">อัปโหลดรูปภาพหลักฐานการชำระเงิน (เช่น สลิปโอนเงิน หรือ QR Code ที่สแกนแล้ว)</p>
         </section>
 
-        {/* 🔸 ปุ่มดำเนินการ */}
-        <div className="flex justify-between">
-          <Link href="/cart" className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded">
+        {/* 🔸 Action Buttons */}
+        <div className="flex justify-between mt-6">
+          <Link href="/cart" className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded">
             กลับไปแก้ไขตะกร้า
           </Link>
           <button onClick={handleCheckout}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">
             ยืนยันการสั่งซื้อ
           </button>
         </div>
@@ -219,5 +215,5 @@ export default function CheckoutPage() {
   );
 }
 
-// 🔹 สไตล์ Input ที่ใช้ซ้ำหลายที่
-const inputStyle = "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
+const inputStyle =
+  "shadow appearance-none border border-pink-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400";

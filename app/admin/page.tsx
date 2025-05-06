@@ -27,7 +27,7 @@ interface AdminUser { name: string; }
 const filterStatuses: RentalStatus[] = ["ทั้งหมด", "รอการยืนยัน", "เตรียมจัดส่ง", "กำลังจัดส่ง", "ระหว่างการเช่า", "รอการคืน", "คืนแล้ว", "ยกเลิก"];
 const statusColors: Record<ActualRentalStatus, string> = {
   "รอการยืนยัน": "bg-yellow-100 text-yellow-800",
-  "เตรียมจัดส่ง": "bg-blue-100 text-blue-800",
+  "เตรียมจัดส่ง": "bg-pink-100 text-pink-800",
   "กำลังจัดส่ง": "bg-cyan-100 text-cyan-800",
   "ระหว่างการเช่า": "bg-purple-100 text-purple-800",
   "รอการคืน": "bg-orange-100 text-orange-800",
@@ -44,7 +44,6 @@ const mockRentals: Rental[] = [
   { id: "RNT008", customerName: "สมหญิง จริงใจ", rentalRequestDate: "2025-05-02", pickupDate: "2025-05-09", returnDate: "2025-05-11", items: [{ outfitId: "T001", outfitName: "ชุดไทยประยุกต์" }], status: "กำลังจัดส่ง", trackingNumber: "TH123456789", shippingAddress: "444/55 ถ.วิภาวดีรังสิต จตุจักร กรุงเทพมหานคร 10900" },
 ];
 const mockUser: AdminUser = { name: "Admin" };
-// --- สิ้นสุดข้อมูลจำลอง ---
 
 // --- Utility Functions ---
 const getStatusColorClass = (status: ActualRentalStatus): string => statusColors[status] || 'bg-gray-100 text-gray-800';
@@ -52,19 +51,23 @@ const renderRentalItemsShort = (items: RentalItem[]): string => {
   if (!items || items.length === 0) return '-';
   const displayItems = items.slice(0, 1);
   const text = displayItems.map(item => item.outfitName).join(', ');
-  return items.length > displayItems.length ? `<span class="math-inline">\{text\}, \.\.\. \(</span>{items.length} รายการ)` : text;
+  return items.length > displayItems.length ? `<span class="math-inline">{text}, ... ({items.length} รายการ)</span>` : text;
 };
 
 // --- Sub Components ---
 const AdminHeader = ({ loggedInUser, onLogout }: { loggedInUser: AdminUser; onLogout: () => void }) => (
   <header className="bg-white shadow-md p-4 sticky top-0 z-10">
     <div className="container mx-auto flex items-center justify-between gap-4">
-      <h1 className="text-2xl font-bold text-gray-800 whitespace-nowrap">จัดการการเช่าชุด</h1>
+      <h1 className="text-2xl font-bold text-pink-600">จัดการการเช่าชุด</h1>
       <div className="flex-1 min-w-0">
-        <input type="text" placeholder="ค้นหาด้วยหมายเลขเช่า, ชื่อลูกค้า, ชื่อชุด..." className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+        <input
+          type="text"
+          placeholder="ค้นหาด้วยหมายเลขเช่า, ชื่อลูกค้า, ชื่อชุด..."
+          className="w-full px-4 py-2 border border-pink-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 text-black"
+        />
       </div>
       <div className="flex items-center space-x-4 flex-shrink-0">
-        <span className="text-gray-700 hidden md:block">{loggedInUser.name}</span>
+        <span className="text-pink-700">{loggedInUser.name}</span>
         <button onClick={onLogout} className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow">ออกจากระบบ</button>
       </div>
     </div>
@@ -72,10 +75,10 @@ const AdminHeader = ({ loggedInUser, onLogout }: { loggedInUser: AdminUser; onLo
 );
 
 const StatusFilterBar = ({ statuses, activeStatus, onFilterClick }: { statuses: RentalStatus[]; activeStatus: RentalStatus; onFilterClick: (status: RentalStatus) => void }) => (
-  <div className="bg-white border-b border-gray-200 sticky top-[72px] z-10">
+  <div className="bg-white border-b border-pink-200 sticky top-[72px] z-10">
     <div className="container mx-auto px-4 py-2 flex space-x-1 overflow-x-auto">
       {statuses.map((status) => (
-        <button key={status} onClick={() => onFilterClick(status)} className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors duration-150 ${activeStatus === status ? 'bg-indigo-600 text-white shadow' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+        <button key={status} onClick={() => onFilterClick(status)} className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors duration-150 ${activeStatus === status ? 'bg-pink-600 text-white shadow' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
           {status}
         </button>
       ))}
@@ -99,8 +102,8 @@ const RentalTableRow = ({
   onCancelRental: (id: string) => void;
 }) => (
   <tr key={rental.id} className="hover:bg-gray-50">
-    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-800">
-      <Link href={`/admin/rentals/${rental.id}`} className="text-indigo-600 hover:text-indigo-800">{rental.id}</Link>
+    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-pink-600 hover:text-pink-800">
+      <Link href={`/admin/rentals/${rental.id}`} className="text-pink-600 hover:text-pink-800">{rental.id}</Link>
     </td>
     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{rental.customerName}</td>
     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{rental.rentalRequestDate}</td>
@@ -113,7 +116,7 @@ const RentalTableRow = ({
     <td className="px-4 py-3 whitespace-normal text-sm text-gray-500">{rental.shippingAddress}</td>
     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
       {rental.status === "รอการยืนยัน" && (
-        <button onClick={() => onConfirmPreparing(rental.id)} className="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-2 rounded text-xs">เตรียมชุด</button>
+        <button onClick={() => onConfirmPreparing(rental.id)} className="bg-pink-500 hover:bg-pink-700 text-white py-1 px-2 rounded text-xs">เตรียมชุด</button>
       )}
       {rental.status === "เตรียมจัดส่ง" && (
         <button onClick={() => {
@@ -127,131 +130,75 @@ const RentalTableRow = ({
       {rental.status === "รอการคืน" && (
         <button onClick={() => onConfirmReturned(rental.id)} className="bg-teal-500 hover:bg-teal-700 text-white py-1 px-2 rounded text-xs">คืนแล้ว</button>
       )}
-      {(rental.status === "รอการยืนยัน" || rental.status === "เตรียมจัดส่ง" || rental.status === "กำลังจัดส่ง" || rental.status === "รอการคืน") && (
+      {(rental.status === "รอการยืนยัน" || rental.status === "เตรียมจัดส่ง") && (
         <button onClick={() => onCancelRental(rental.id)} className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-xs">ยกเลิก</button>
       )}
-      <Link href={`/admin/rentals/${rental.id}`} className="text-gray-600 hover:text-gray-900">
-        ดูรายละเอียด
-      </Link>
     </td>
   </tr>
 );
 
-export default function AdminRentalPage() {
-  const [rentals, setRentals] = useState<Rental[]>(mockRentals);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [activeStatusFilter, setActiveStatusFilter] = useState<RentalStatus>("ทั้งหมด");
-  const [loggedInUser, setLoggedInUser] = useState<AdminUser>(mockUser);
+// --- Main Component ---
+const AdminRentalPage = () => {
   const router = useRouter();
+  const [activeStatus, setActiveStatus] = useState<RentalStatus>("ทั้งหมด");
+  const [rentals, setRentals] = useState<Rental[]>(mockRentals);
+  const [user, setUser] = useState<AdminUser>(mockUser);
 
   const filteredRentals = useMemo(() => {
-    return rentals.filter(rental => {
-      const statusMatch = activeStatusFilter === "ทั้งหมด" || rental.status === activeStatusFilter;
-      const searchMatch = !searchTerm ||
-        rental.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        rental.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        rental.items.some(item => item.outfitName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        rental.shippingAddress.toLowerCase().includes(searchTerm.toLowerCase());
-      return statusMatch && searchMatch;
-    });
-  }, [rentals, searchTerm, activeStatusFilter]);
+    return activeStatus === "ทั้งหมด" ? rentals : rentals.filter(rental => rental.status === activeStatus);
+  }, [activeStatus, rentals]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleFilterClick = (status: RentalStatus) => {
-    setActiveStatusFilter(status);
-  };
-
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    router.push('/login');
-  };
-
-  const updateRentalStatus = useCallback((rentalId: string, newStatus: ActualRentalStatus, extraData?: Partial<Rental>) => {
-    setRentals(prevRentals =>
-      prevRentals.map(rental =>
-        rental.id === rentalId
-          ? { ...rental, status: newStatus, ...extraData }
-          : rental
-      )
-    );
-    console.log(`API Call: Update rental ${rentalId} to status ${newStatus} with data:`, extraData);
-  }, []);
-
-  const handleConfirmPreparing = (rentalId: string) => {
-    updateRentalStatus(rentalId, "เตรียมจัดส่ง");
-  };
-
-  const handleConfirmShipped = (rentalId: string, trackingNumber?: string) => {
-    updateRentalStatus(rentalId, "กำลังจัดส่ง", { trackingNumber });
-  };
-
-  const handleConfirmReturnRequested = (rentalId: string) => {
-    updateRentalStatus(rentalId, "รอการคืน");
-  };
-
-  const handleConfirmReturned = (rentalId: string) => {
-    updateRentalStatus(rentalId, "คืนแล้ว");
-  };
-
-  const handleCancelRental = (rentalId: string) => {
-    updateRentalStatus(rentalId, "ยกเลิก");
-  };
+  const handleFilterClick = useCallback((status: RentalStatus) => setActiveStatus(status), []);
+  const handleLogout = () => router.push('/admin/login');
+  const handleConfirmPreparing = (id: string) => alert(`Confirmed preparing for rental ${id}`);
+  const handleConfirmShipped = (id: string, trackingNumber?: string) => alert(`Confirmed shipped for rental ${id} with tracking number: ${trackingNumber}`);
+  const handleConfirmReturnRequested = (id: string) => alert(`Confirmed return requested for rental ${id}`);
+  const handleConfirmReturned = (id: string) => alert(`Confirmed returned for rental ${id}`);
+  const handleCancelRental = (id: string) => alert(`Cancelled rental ${id}`);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <AdminHeader loggedInUser={loggedInUser} onLogout={handleLogout} />
-      <StatusFilterBar statuses={filterStatuses} activeStatus={activeStatusFilter} onFilterClick={handleFilterClick} />
-      <main className="flex-1 container mx-auto p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">รายการเช่า ({activeStatusFilter}) - พบ {filteredRentals.length} รายการ</h2>
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+    <div className="min-h-screen bg-pink-50">
+      <AdminHeader loggedInUser={user} onLogout={handleLogout} />
+      <StatusFilterBar statuses={filterStatuses} activeStatus={activeStatus} onFilterClick={handleFilterClick} />
+      <div className="container mx-auto py-6">
+        <table className="min-w-full table-auto bg-white shadow-md rounded-md overflow-hidden">
+          <thead>
             <tr>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">หมายเลขเช่า</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อลูกค้า</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ทำรายการ</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่รับ</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่คืน</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รายการชุด</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ที่อยู่จัดส่ง</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ดำเนินการ</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRentals.length > 0 ? (
-                filteredRentals.map((rental) => (
-                  <RentalTableRow
-                    key={rental.id}
-                    rental={rental}
-                    onConfirmPreparing={handleConfirmPreparing}
-                    onConfirmShipped={handleConfirmShipped}
-                    onConfirmReturnRequested={handleConfirmReturnRequested}
-                    onConfirmReturned={handleConfirmReturned}
-                    onCancelRental={handleCancelRental}
-                  />
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={9} className="px-6 py-10 text-center text-sm text-gray-500">
-                    ไม่พบรายการเช่าที่ตรงกับเงื่อนไข
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-4 flex justify-between">
-          <Link href="/">
-            <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">
-              กลับไปหน้าหลัก
-            </button>
-          </Link>
-        </div>
-      </main>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">หมายเลขเช่า</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">ชื่อลูกค้า</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">วันที่ยืนยันการเช่า</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">วันที่รับ</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">วันที่คืน</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">รายการชุด</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">สถานะ</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">ที่อยู่จัดส่ง</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800">ดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRentals.map(rental => (
+              <RentalTableRow
+                key={rental.id}
+                rental={rental}
+                onConfirmPreparing={handleConfirmPreparing}
+                onConfirmShipped={handleConfirmShipped}
+                onConfirmReturnRequested={handleConfirmReturnRequested}
+                onConfirmReturned={handleConfirmReturned}
+                onCancelRental={handleCancelRental}
+              />
+            ))}
+          </tbody>
+        </table>
+        <div className="mt-6 text-center">
+          <Link href="/">
+            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded shadow">
+              กลับหน้าแรก
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default AdminRentalPage;
